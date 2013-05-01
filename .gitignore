@@ -1,17 +1,13 @@
-# Object files
+# General C files
 *.o
-
-# Libraries
+*.out
 *.lib
 *.a
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
+# Arduino Stuff
+*.elf
+*.bin
+*.hex
+*.lst
+*.map
+*.srec
