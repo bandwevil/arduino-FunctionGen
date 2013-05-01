@@ -15,30 +15,6 @@
  */
 
 
-int buttonPressed() {
-   int previous, next, i = 0;
-   previous = PINB & (1<<3);
-
-   while (i < 4) {
-      _delay_ms(1);
-      next = PINB & (1<<3);
-      if (previous == next) {
-         i++;
-      } else {
-         i = 0;
-      }
-      previous = next;
-   }
-
-   if (next >= 1) {
-      PORTB |= (1<<5);
-      return 1;
-   } else {
-      PORTB &= ~(1<<5);
-      return 0;
-   }
-}
-
 void writeStr(char* str) {
    int i = 0;
 
