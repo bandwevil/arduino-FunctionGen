@@ -11,3 +11,8 @@
 *.lst
 *.map
 *.srec
+
+# Other
+*.png
+*.pdf
+*.bak
