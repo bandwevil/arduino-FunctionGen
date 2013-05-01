@@ -6,6 +6,19 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+/*
+ * Sets up the SPI to write out to the pins defined above, connected to the DAC.
+ */
 void Initialize_SPI_Master(void);
+
+/*
+ * Transmits 12 bits to the DAC with the appropriate header.
+ * Takes in a values from 0x000 to 0xFFF
+ */
 void Transmit_SPI_Master(int Data);
+
+/*
+ * Generates a sloped wave corresponding to half of a triabgle wave.
+ * Hardcoded at the moment to a specific frequency and amplitude.
+ */
 void tri(int from, int to);

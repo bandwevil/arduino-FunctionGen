@@ -15,11 +15,6 @@
  */
 
 
- /*
-  * Checks if the button input on Pin B3 is pressed or not.
-  * Polls the button state every 1ms, 4 consecutive reads means that it's stable.
-  * Returns 1 if the button is up, 0 if it is pressed.
-  */
 int buttonPressed() {
    int previous, next, i = 0;
    previous = PINB & (1<<3);
@@ -44,9 +39,6 @@ int buttonPressed() {
    }
 }
 
-/*
- * Takes in a string of chars, and prints them one by one to the display.
- */
 void writeStr(char* str) {
    int i = 0;
 
@@ -58,9 +50,6 @@ void writeStr(char* str) {
    }
 }
 
-/*
- * Writes a single character to the display.
- */
 void writeChar(char out) {
    PORTB |= (1<<2);
    PORTB &= ~(1<<1);
@@ -71,10 +60,6 @@ void writeChar(char out) {
    _delay_ms(1);
 }
 
-/*
- * Shifts the entire display to the right or left, using extra memory spaces off of the display.
- * dir equal to 0 is a right shift, otherwise shift left.
- */
 void displayShift(int dir) {
    PORTB &= ~(6);
    if (dir >= 1) {
@@ -87,9 +72,6 @@ void displayShift(int dir) {
    _delay_ms(2);
 }
 
-/*
- * CLears the display and waits 2 ms
- */
 void clearDisp() {
    PORTD = 0x01;
    PORTB &= ~(0x07);
@@ -97,9 +79,6 @@ void clearDisp() {
    _delay_ms(2);
 }
 
-/*
- * Sends the return home function and waits 1 ms
- */
 void returnHome() {
    PORTD = 0x02;
    PORTB &= ~(0x07);
@@ -107,12 +86,6 @@ void returnHome() {
    _delay_ms(1);
 }
 
-/*
- * Initializes the LCD to the desired settings.
- * 8 bit data-length, 2 lines, 5x8 dots.
- * Display on, no cursor.
- * Right moving cursor, no shift
- */
 void startLCD() {
    DDRD = 0xFF; //Set all of Port D to output
    DDRB = RS | RW | E; //Set Port B to output
