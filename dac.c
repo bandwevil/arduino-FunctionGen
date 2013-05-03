@@ -35,7 +35,7 @@ void Initialize_SPI_Master(void)
 
 void Transmit_SPI_Master(int Data) {
    PORTB &= ~(1 << SS); 		//Assert slave select 
-   SPDR = ((Data >> 8) & 0x0F) | 0x10; 	//Attach configuration Bits onto MSB 
+   SPDR = ((Data >> 8) & 0x0F) | 0x10; 	//Attach configuration Bits onto MSB
    while (!(SPSR & (1<<SPIF)));
    SPDR = 0xFF & Data;
    while (!(SPSR & (1<<SPIF)));

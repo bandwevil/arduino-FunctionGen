@@ -41,20 +41,20 @@ void initTimer2(int freq) {
    //Set fequency of interrupts, default to 100 Hz
    //Interrupts occur 40x every period
    if (freq == 500) {
-      OCR2A = 100;
+      OCR2A = 98;
       TCCR2B |= (1 << CS21);
    } else if (freq == 400) {
-      OCR2A = 124;
+      OCR2A = 122;
       TCCR2B |= (1 << CS21);
    }
    else if (freq == 300) {
-      OCR2A = 166;
+      OCR2A = 162;
       TCCR2B |= (1 << CS21);
    } else if (freq == 200) {
-      OCR2A = 250;
+      OCR2A = 243;
       TCCR2B |= (1 << CS21);
    } else {
-      OCR2A = 124;
+      OCR2A = 120;
       TCCR2B |= (1 << CS21) | (1 << CS20);
    }
 

@@ -1,5 +1,5 @@
 PRG            = FunctionGen
-OBJ            = main.o interrupt.o
+OBJ            = main.o interrupt.o dac.o
 PROGRAMMER     = arduino
 PORT           = /dev/ttyACM0
 MCU_TARGET     = atmega328p

@@ -1,6 +1,6 @@
 #include "main.h"
 
-volatile unsigned char interruptCounter, waveState;
+volatile unsigned char interruptCounter, waveState, dutyCycle;
 
 int buttonPressed();
 void squareWave();
@@ -10,12 +10,12 @@ int handleButton(int pin, int* state);
 
 int main()
 {
-   int freq = 100, button0State = 0;
+   int freq = 100, button0State = BUTTON_UP, button1State = BUTTON_UP, button2State = BUTTON_UP;
    DDRB |= (1<<5);
-   DDRD &= ~(1<<2);
-   PORTD |= (1<<2);
 
    waveState = WAVE_SQUARE;
+   interruptCounter = 0;
+   dutyCycle = 16;
 
    initTimer2(freq);
    Initialize_SPI_Master();
@@ -24,6 +24,26 @@ int main()
       if (handleButton(2, &button0State)) {
          freq = (freq%500) + 100;
          initTimer2(freq);
+      }
+      if (handleButton(3, &button1State)) {
+         switch (waveState) {
+            case WAVE_SQUARE:
+               waveState = WAVE_SAWTOOTH;
+               break;
+            case WAVE_SAWTOOTH:
+               waveState = WAVE_SINE;
+               break;
+            case WAVE_SINE:
+               waveState = WAVE_SQUARE;
+               break;
+         }
+      }
+      if (handleButton(4, &button2State)) {
+         if (dutyCycle < 40) {
+            dutyCycle += 4;
+         } else {
+            dutyCycle = 0;
+         }
       }
    }
 }
@@ -35,7 +55,7 @@ int handleButton(int pin, int* state) {
    if (in == 0 && *state == BUTTON_UP) {
       *state = BUTTON_DOWN;
       return 1;
-   } else if (button == 1 && *state == BUTTON_DOWN) {
+   } else if (in == 1 && *state == BUTTON_DOWN) {
       *state = BUTTON_UP;
    }
 
@@ -49,6 +69,10 @@ int handleButton(int pin, int* state) {
  */
 int buttonPressed(int pin) {
    int previous, next, i = 0;
+
+   DDRD &= ~(1<<pin);
+   PORTD |= (1<<pin);
+
    previous = PIND & (1<<pin);
 
    while (i < 4) {
@@ -89,14 +113,20 @@ ISR(TIMER2_COMPA_vect) {
       case WAVE_SINE:
          sineWave();
          break;
+      default:
+         squareWave();
    }
 }
 
 void squareWave() {
-   if (interruptCounter >= 20) {
-      Transmit_SPI_Master(0x000);
+   if (dutyCycle != 0) {
+      if (interruptCounter > dutyCycle) {
+         Transmit_SPI_Master(0x000);
+      } else {
+         Transmit_SPI_Master(0xFFF);
+      }
    } else {
-      Transmit_SPI_Master(0xFFF);
+      Transmit_SPI_Master(0x000);
    }
 }
 
@@ -105,4 +135,5 @@ void sawtoothWave() {
 }
 
 void sineWave() {
+   Transmit_SPI_Master(sinTable[interruptCounter]);
 }
