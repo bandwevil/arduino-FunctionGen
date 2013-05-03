@@ -3,10 +3,14 @@
 volatile unsigned char interruptCounter, waveState, dutyCycle;
 
 int buttonPressed();
+void Initialize_ADC0();
 void squareWave();
 void sawtoothWave();
 void sineWave();
+void customWave();
 int handleButton(int pin, int* state);
+
+int customTable[41];
 
 int main()
 {
@@ -19,6 +23,7 @@ int main()
 
    initTimer2(freq);
    Initialize_SPI_Master();
+   Initialize_ADC0();
 
    while (1) {
       if (handleButton(2, &button0State)) {
@@ -34,6 +39,9 @@ int main()
                waveState = WAVE_SINE;
                break;
             case WAVE_SINE:
+               waveState = WAVE_CUSTOM;
+               break;
+            case WAVE_CUSTOM:
                waveState = WAVE_SQUARE;
                break;
          }
@@ -93,6 +101,13 @@ int buttonPressed(int pin) {
    }
 }
 
+void Initialize_ADC0() {
+   ADCSRA = 0x87;	//Turn On ADC and set prescaler (CLK/128--62 kHz)
+   //MAX A/D conversion rate 5 kHz @ 62 kHz frequency
+   ADCSRB = 0x00;	//turn off autotrigger
+   ADMUX = 0x00;    	//Set ADC channel ADC0 and AREF input (wire to 5V)
+}
+
 
 ISR(TIMER2_COMPA_vect) {
    //InterruptCounter gives us the current 'position' we are in the wave's period
@@ -112,6 +127,9 @@ ISR(TIMER2_COMPA_vect) {
          break;
       case WAVE_SINE:
          sineWave();
+         break;
+      case WAVE_CUSTOM:
+         customWave();
          break;
       default:
          squareWave();
@@ -136,4 +154,16 @@ void sawtoothWave() {
 
 void sineWave() {
    Transmit_SPI_Master(sinTable[interruptCounter]);
+}
+
+void customWave() {
+   int input;
+
+   if(buttonPressed(5) == 0) {
+      ADCSRA = 0xC7;        		// start conversion
+      input = ADC & 0x3FF;     		// jgh read voltage from PC0/AD0 (A5 for UNO rev 2)
+      customTable[interruptCounter] = input << 2;
+   }
+
+   Transmit_SPI_Master(customTable[interruptCounter]);
 }
