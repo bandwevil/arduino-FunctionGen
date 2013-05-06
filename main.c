@@ -1,16 +1,6 @@
 #include "main.h"
 
-volatile unsigned char interruptCounter, waveState, dutyCycle;
-
-int buttonPressed();
-void Initialize_ADC0();
-void squareWave();
-void sawtoothWave();
-void sineWave();
-void customWave();
-int handleButton(int pin, int* state);
-
-int customTable[41];
+volatile unsigned char interruptCounter, waveState, dutyCycle, button3State;
 
 int main()
 {
@@ -39,11 +29,13 @@ int main()
                waveState = WAVE_SINE;
                break;
             case WAVE_SINE:
+               waveState = WAVE_CUSTOM;
+               break;
+            case WAVE_CUSTOM:
                waveState = WAVE_SQUARE;
                break;
-            /*case WAVE_CUSTOM:*/
-               /*waveState = WAVE_SQUARE;*/
-               /*break;*/
+            default:
+               waveState = WAVE_SQUARE;
          }
       }
       if (handleButton(4, &button2State)) {
@@ -149,7 +141,7 @@ void squareWave() {
 }
 
 void sawtoothWave() {
-   Transmit_SPI_Master(105*interruptCounter);
+   Transmit_SPI_Master(100*interruptCounter);
 }
 
 void sineWave() {
@@ -157,12 +149,19 @@ void sineWave() {
 }
 
 void customWave() {
-   int input;
 
-   if(buttonPressed(5) == 0) {
+   DDRD &= ~(1<<5);
+   PORTD |= (1<<5);
+
+   if((PIND & (1<<5)) == 0) {
+      int input;
       ADCSRA = 0xC7;        // start conversion
       input = ADC & 0x3FF;  // read voltage from ADC
-      customTable[interruptCounter] = input << 2;
+      if ((input<<2) < 0xFFF) {
+         customTable[interruptCounter] = input << 2;
+      } else {
+         customTable[interruptCounter] = 0xFFF;
+      }
    }
 
    Transmit_SPI_Master(customTable[interruptCounter]);
