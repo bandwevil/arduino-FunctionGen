@@ -39,11 +39,11 @@ int main()
                waveState = WAVE_SINE;
                break;
             case WAVE_SINE:
-               waveState = WAVE_CUSTOM;
-               break;
-            case WAVE_CUSTOM:
                waveState = WAVE_SQUARE;
                break;
+            /*case WAVE_CUSTOM:*/
+               /*waveState = WAVE_SQUARE;*/
+               /*break;*/
          }
       }
       if (handleButton(4, &button2State)) {
@@ -160,8 +160,8 @@ void customWave() {
    int input;
 
    if(buttonPressed(5) == 0) {
-      ADCSRA = 0xC7;        		// start conversion
-      input = ADC & 0x3FF;     		// jgh read voltage from PC0/AD0 (A5 for UNO rev 2)
+      ADCSRA = 0xC7;        // start conversion
+      input = ADC & 0x3FF;  // read voltage from ADC
       customTable[interruptCounter] = input << 2;
    }
 
