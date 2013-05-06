@@ -1,31 +1,16 @@
 /*
- * CPE 329 - Interrupt tutorial
+ * CPE 329 - Spring 2013
+ * Project 2: Function Generator
+ *
+ * Tyler Saadus and Jonathan Hernandez
+ *
+ * Outputs square, sawtooth, and sine waves to an external DAC at varying
+ * frequencies and duty cycles. Also supports analog input sampling and mirroring
+ * through the onboard ADC.
+ *
  */
 
 #include "interrupt.h"
-
-/*
- *int main() {
- *   myCounter = 1;
- *   DDRB |= (1<<5);
- *   DDRD |= (1<<6);
- *
- *   initTimer2();
- *   [>origInit();<]
- *
- *
- *   while(1) { //infinite blank loop, interrupt does actual work
- *   }
- *   return 1;
- *}
- */
-
-void origInit() {
-   TCCR0A = 0x01; // timer overflow mode
-   TCCR0B = 0x05; // timer clk = system clk / 1024
-   TIFR0 = 0x01;     // clear previous timer overflow
-   TIMSK0 = 0x01; // timer compare interrupt enabled
-}
 
 void initTimer2(int freq) {
    cli(); //Make sure we don't hit an interrupt while changing settings
@@ -46,8 +31,7 @@ void initTimer2(int freq) {
    } else if (freq == 400) {
       OCR2A = 122;
       TCCR2B |= (1 << CS21);
-   }
-   else if (freq == 300) {
+   } else if (freq == 300) {
       OCR2A = 162;
       TCCR2B |= (1 << CS21);
    } else if (freq == 200) {

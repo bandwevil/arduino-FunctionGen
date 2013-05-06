@@ -4,7 +4,7 @@ PROGRAMMER     = arduino
 PORT           = /dev/ttyACM0
 MCU_TARGET     = atmega328p
 AVRDUDE_TARGET = m328p
-OPTIMIZE       = -O1
+OPTIMIZE       = -Os
 DEFS           =
 LIBS           =
 
